@@ -1,0 +1,31 @@
+#!/bin/bash
+
+echo "Hledám skener.."
+
+skener=$(scanimage --formatted-device-list=%d%n);
+
+if [[ "$skener" == "" ]]; then
+	echo "Žádné zařízení nenalezeno!";
+	exit 0;
+fi
+
+echo "Nalezeno zařízení '"$skener"', probíhá skenování..."
+
+scanimage -d $skener -p --mode Color --resolution 300 -x 215 -y 297 > /tmp/sken.ppm
+
+
+
+name=sken
+if [[ -e $name.jpg ]] ; then
+    i=0
+    while [[ -e $name$i.jpg ]] ; do
+        let i++
+    done
+    name=$name$i
+fi
+convert /tmp/sken.ppm  $name.jpg
+
+rm /tmp/sken.ppm
+
+soubor=$(ls -tr sken* | tail -n1);
+echo "Skenování dokončeno, výsledek uložen do souboru "$name".jpg.";
